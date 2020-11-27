@@ -1,0 +1,55 @@
+name: merlin-adguardhome-plugin-build
+
+on:
+  push:
+    paths:
+    - 'adguardhome/**'
+    - '.github/workflows/merlin-adguardhome-plugin.yml'
+  workflow_dispatch:
+
+jobs:
+  job1:
+    name: plugin-build
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v2
+
+      - name: 'Set version env'
+        run: |
+          echo "PLUGIN_VER=$(echo `grep -wn "version="  /home/runner/work/merlin-AdGuardHome/merlin-AdGuardHome/adguardhome/adguardhome/adguardhome.sh`|awk -F: '{print $2}'| sed s/"version="//g| sed  s/"\""//g )" >> $GITHUB_ENV
+
+
+      - name: 'build_adguardhome.tar.gz'
+        run: |
+          lastver=$(curl --silent "https://api.github.com/repos/AdguardTeam/AdGuardHome/releases/latest " | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+          curl  --retry 2  -o /tmp/adguardhome_update.tar.gz -L  https://github.com/AdguardTeam/AdGuardHome/releases/download/${lastver}/AdGuardHome_linux_armv5.tar.gz
+          mkdir -p /tmp/adguardhome_update
+          tar xzf  /tmp/adguardhome_update.tar.gz -C /tmp/adguardhome_update
+          cp -rf /tmp/adguardhome_update/AdGuardHome/AdGuardHome /home/runner/work/merlin-AdGuardHome/merlin-AdGuardHome/adguardhome/adguardhome/adguardhome
+          cd /home/runner/work/merlin-AdGuardHome/merlin-AdGuardHome/
+          tar -czvf adguardhome.tar.gz adguardhome
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ env.PLUGIN_VER }}
+          release_name: version ${{ env.PLUGIN_VER }}
+          body: |
+            merlin-adguardhome-plugin: version-${{ env.PLUGIN_VER }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Release Asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: /home/runner/work/merlin-AdGuardHome/merlin-AdGuardHome/adguardhome.tar.gz
+          asset_name: adguardhome.tar.gz
+          asset_content_type: application/x-compressed-tar

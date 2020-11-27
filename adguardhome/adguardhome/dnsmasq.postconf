@@ -1,0 +1,30 @@
+#!/bin/sh
+
+source /usr/sbin/helper.sh
+eval `dbus export adguardhome_enable`
+eval `dbus export adguardhome_dns_port`
+eval `dbus export adguardhome_dnsmasq_set`
+
+# 更改dnsmasq设置
+if [ "$adguardhome_enable" == "1" ] && [ "$adguardhome_dns_port" != "53" ] && [ -e /koolshare/adguardhome/AdGuardHome.yaml ];then
+	if [ "$adguardhome_dnsmasq_set" != "0" ]  && [ "$adguardhome_dnsmasq_set" != "3" ] ;then
+		[ -n "`cat /etc/dnsmasq.conf|grep no-resolv`" ] && sed -i '/no-resolv/d' /etc/dnsmasq.conf
+		[ -n "`cat /etc/dnsmasq.conf|grep servers-file`" ] && sed -i '/servers-file/d' /etc/dnsmasq.conf
+		[ -n "`cat /etc/dnsmasq.conf|grep resolv-file`" ] && sed -i '/resolv-file/d' /etc/dnsmasq.conf
+		pc_insert "no-poll" "no-resolv" "/etc/dnsmasq.conf"
+		if [ "$adguardhome_dnsmasq_set" == "1" ];then
+			pc_replace "cache-size=1500" "cache-size=9999" /etc/dnsmasq.conf
+		elif [ "$adguardhome_dnsmasq_set" == "2" ];then
+			pc_replace "cache-size=1500" "cache-size=0" /etc/dnsmasq.conf
+		elif [ "$adguardhome_dnsmasq_set" == "4" ];then
+			pc_replace "cache-size=1500" "cache-size=9999" /etc/dnsmasq.conf
+			pc_insert "no-poll" "server=::1#$adguardhome_dns_port" "/etc/dnsmasq.conf"
+		elif [ "$adguardhome_dnsmasq_set" == "5" ];then
+			pc_replace "cache-size=1500" "cache-size=0" /etc/dnsmasq.conf
+			pc_insert "no-poll" "server=::1#$adguardhome_dns_port" "/etc/dnsmasq.conf"
+		else
+			echo "不需要设置"
+		fi
+		pc_insert "no-poll" "server=127.0.0.1#$adguardhome_dns_port" "/etc/dnsmasq.conf"
+	fi
+fi
