@@ -41,7 +41,13 @@ if test ${1} = 'start' ; then
         dbus set adguardhome_dns_enable=0
     fi
     #启动程序
-    exec /koolshare/adguardhome/adguardhome --no-check-update -w $adg_workdir  -p $adg_port -c /koolshare/adguardhome/AdGuardHome.yaml
+    status=`pidof adguardhome | wc -w`
+    if [ $status -ge 1 ];then
+        kill -9 `pidof adguardhome` >/dev/null 2>&1 &
+        exec /koolshare/adguardhome/adguardhome --no-check-update -w $adg_workdir  -p $adg_port -c /koolshare/adguardhome/AdGuardHome.yaml
+    else
+        exec /koolshare/adguardhome/adguardhome --no-check-update -w $adg_workdir  -p $adg_port -c /koolshare/adguardhome/AdGuardHome.yaml
+    fi
   fi
 fi
 

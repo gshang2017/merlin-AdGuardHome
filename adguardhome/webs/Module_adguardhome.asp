@@ -55,7 +55,7 @@
 input[type=button]:focus {
 	outline: none;
 }
-.show-btn1, .show-btn2 {
+.show-btn1, .show-btn2, .show-btn3 {
 	border: 1px solid #222;
 	border-bottom:none;
 	background: linear-gradient(to bottom, #919fa4  0%, #67767d 100%); /* W3C */
@@ -65,7 +65,7 @@ input[type=button]:focus {
 	border-radius: 5px 5px 0px 0px;
 	width:8.45601%;
 }
-.show-btn1:hover, .show-btn2:hover, .active {
+.show-btn1:hover, .show-btn2:hover, .show-btn3:hover, .active {
 	background: #2f3a3e;
 }
 </style>
@@ -86,6 +86,7 @@ function init() {
   set_show_dns();
   auto_bin_update(); 
   adguardhome_dnsmasq_set();   
+  adguardhome_perp_set();
   setTimeout("get_adguardhome_status()", 1000);
   conf2obj();
 }
@@ -449,6 +450,10 @@ function  adguardhome_dnsmasq_set() {
       check_selected("adguardhome_dnsmasq_set", db_adguardhome_.adguardhome_dnsmasq_set);
 }
 
+function  adguardhome_perp_set() {
+      check_selected("adguardhome_perp_set", db_adguardhome_.adguardhome_perp_set);
+}
+
 function check_selected(obj, m) {
     var o = document.getElementById(obj);
     for (var c = 0; c < o.length; c++) {
@@ -466,21 +471,40 @@ function toggle_func() {
 		function() {
 			$j('.show-btn1').addClass('active');
 			$j('.show-btn2').removeClass('active');
+			$j('.show-btn3').removeClass('active');			
 			E("adguardhome_detail_table1").style.display = "";
 			E("adguardhome_detail_table2").style.display = "none";
+			E("adguardhome_detail_table3").style.display = "none";			
 			E("warnnote1").style.display = "";
 			E("warnnote2").style.display = "none";
+			E("warnnote3").style.display = "none";			
 		});
 	$j(".show-btn2").click(
 		//dns pannel
 		function() {
 			$j('.show-btn1').removeClass('active');
 			$j('.show-btn2').addClass('active');
+			$j('.show-btn3').removeClass('active');			
 			E("adguardhome_detail_table1").style.display = "none";
 			E("adguardhome_detail_table2").style.display = "";
+			E("adguardhome_detail_table3").style.display = "none";			
 			E("warnnote1").style.display = "none";
 			E("warnnote2").style.display = "";
+			E("warnnote3").style.display = "none";			
 		});
+	$j(".show-btn3").click(
+		//dns pannel
+		function() {
+			$j('.show-btn1').removeClass('active');
+			$j('.show-btn2').removeClass('active');			
+			$j('.show-btn3').addClass('active');
+			E("adguardhome_detail_table1").style.display = "none";
+			E("adguardhome_detail_table2").style.display = "none";
+			E("adguardhome_detail_table3").style.display = "";			
+			E("warnnote1").style.display = "none";
+			E("warnnote2").style.display = "none";
+			E("warnnote3").style.display = "";			
+		});		
 }
 
 function reload_Soft_Center(){
@@ -579,7 +603,8 @@ location.href = "/Main_Soft_center.asp";
 							<tr width="235px">
 								<td colspan="4" cellpadding="0" cellspacing="0" style="padding:0" border="1" bordercolor="#000">
 									<input id="show-btn1" class="show-btn1" style="cursor:pointer"   type="button" value="基本设置" />
-									<input id="show-btn2" class="show-btn2"  style="cursor:pointer"    type="button" value="DNS设置" />                
+									<input id="show-btn2" class="show-btn2"  style="cursor:pointer"    type="button" value="DNS设置" />   
+									<input id="show-btn3" class="show-btn3"  style="cursor:pointer"    type="button" value="其它设置" />
 								</td>							
 							</tr>						
 						</table>
@@ -636,7 +661,18 @@ location.href = "/Main_Soft_center.asp";
 								</select>
                             </td>
                           </tr>														
-					  </table>					
+					  </table>	
+					  <table  id="adguardhome_detail_table3"  style="display:none;margin:-1px 0px 0px 0px;" width="100%" border="1" align="center" cellpadding="4" cellspacing="0" bordercolor="#6b8fa3" class="FormTable"   >
+                          <tr id="adguardhome_perp_set_tr"  >
+                            <th>守护进程</th>
+                            <td>
+                                <select   id="adguardhome_perp_set" name="adguardhome_perp_set" class="input_option"  > 
+       								<option value="0">关闭</option> 
+									<option value="1">开启</option> 								
+								</select>
+                            </td>
+                          </tr>														
+					  </table>						  
 					  <div id="warnnote1">
 						  <div id="adguardhome_note1"class="SimpleNote">
 							  <i><li>DNS端口仅支持非53端口，默认［153］。</li></i>							
@@ -656,6 +692,11 @@ location.href = "/Main_Soft_center.asp";
 						  	  <i><li>选项【5】设置ipv4和ipv6，将dnsmasq的server地址设为AdGuardHome监听地址并禁用dnsmasq缓存。AdGuardHome无法显示客服端ip地址。</li></li>
 						  </div>
 					  </div>
+					  <div id="warnnote3" style="display: none;">
+						  <div id="adguardhome_note3" class="SimpleNote" >							
+							  <i><li>开启后每分钟检测软件中心守护进程状态，防止因软件中心挂掉导致AdGuardHome程序无法启动。</li></li>
+						  </div>
+					  </div>					  
 					</div>
                     <div style="margin-left:5px;margin-top:10px;margin-bottom:10px"><img src="/images/New_ui/export/line_export.png"></div>
                     <div class="apply_gen">

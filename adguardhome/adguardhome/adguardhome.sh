@@ -5,12 +5,13 @@
 source /koolshare/scripts/base.sh
 export PERP_BASE=/koolshare/perp
 alias echo_date='echo 【$(TZ=UTC-8 date -R +%Y年%m月%d日\ %X)】:'
-version="1.0"
+version="1.1"
 binversion=$(echo `/koolshare/adguardhome/adguardhome --version`| sed s/", channel release, arch linux arm v5"//g| sed  s/"AdGuard Home, version "//g )
 eval `dbus export adguardhome_enable`
 eval `dbus export adguardhome_bin_auto_update`
 eval `dbus export adguardhome_dnsmasq_set`
 eval `dbus export adguardhome_dns_port`
+eval `dbus export adguardhome_perp_set`
 
 # ====================================函数定义====================================
 
@@ -62,7 +63,7 @@ dnsmasq_set(){
 			rm -rf /jffs/scripts/dnsmasq.postconf
 			ln -sf /koolshare/adguardhome/dnsmasq.postconf /jffs/scripts/dnsmasq.postconf
 		fi
-		service restart_dnsmasq >/dev/null 2>&1	 	
+		service restart_dnsmasq >/dev/null 2>&1
     elif [ "$adguardhome_dnsmasq_set" == "2" ] && [ "$adguardhome_dns_port" != "53" ];then
 		# 创建dnsmasq.postconf软连接到/jffs/scripts/文件夹.
 	    [ ! -L "/jffs/scripts/dnsmasq.postconf" ] && ln -sf /koolshare/adguardhome/dnsmasq.postconf /jffs/scripts/dnsmasq.postconf
@@ -70,7 +71,7 @@ dnsmasq_set(){
 			rm -rf /jffs/scripts/dnsmasq.postconf
 			ln -sf /koolshare/adguardhome/dnsmasq.postconf /jffs/scripts/dnsmasq.postconf
 		fi
-		service restart_dnsmasq >/dev/null 2>&1	
+		service restart_dnsmasq >/dev/null 2>&1
 	elif [ "$adguardhome_dnsmasq_set" == "3" ] && [ "$adguardhome_dns_port" != "53" ];then
 		# 删除dnsmasq设置
 		if [ -n "`ls -l  /jffs/scripts/dnsmasq.postconf|grep "adguardhome"`" ];then
@@ -92,7 +93,7 @@ dnsmasq_set(){
 			rm -rf /jffs/scripts/dnsmasq.postconf
 			ln -sf /koolshare/adguardhome/dnsmasq.postconf /jffs/scripts/dnsmasq.postconf
 		fi
-		service restart_dnsmasq >/dev/null 2>&1	
+		service restart_dnsmasq >/dev/null 2>&1
 	else
 		# 删除dnsmasq设置
 		if [ -n "`ls -l  /jffs/scripts/dnsmasq.postconf|grep "adguardhome"`" ];then
@@ -189,6 +190,23 @@ load_nat(){
 	nat_set
 }
 
+#设置perp
+perp_set(){
+  if [ "$adguardhome_enable" == "1" ] && [ "$adguardhome_perp_set" == "1" ] ;then
+    cru a adguardhomeperp "*/1 * * * *   /koolshare/adguardhome/adguardhome.sh perp_restart"
+  else
+    cru d adguardhomeperp
+  fi
+
+}
+
+#重启软件中心perp
+adguardhome_perp(){
+  if ! pidof perpboot > /dev/null; then
+    sh /koolshare/perp/perp.sh stop
+    sh /koolshare/perp/perp.sh start
+  fi
+}
 
 # 停止adguardhome主程序
 stop_adguardhome(){
@@ -253,14 +271,18 @@ start)
     auto_start
     dnsmasq_set
     load_nat
+    perp_set
   else
     logger "[软件中心]: adguardhome未设置开机启动，跳过！"
   fi
   ;;
 stop | kill )
   stop_adguardhome
+  write_adguardhome_version
+  write_adguardhome_bin_version
   dnsmasq_set
   load_nat
+  perp_set
   ;;
 restart)
   write_adguardhome_version
@@ -271,6 +293,7 @@ restart)
   auto_start
   dnsmasq_set
   load_nat
+  perp_set
   ;;
 #设置dns端口网页显示状态、插件版本号、adguardhome程序版本号
 show)
@@ -281,9 +304,15 @@ show)
   write_adguardhome_bin_version
   echo_date “已设定adguardhome程序版本号”
   ;;
+perp_restart)
+  adguardhome_perp
+  ;;
 *)
+  write_adguardhome_version
+  write_adguardhome_bin_version
   dnsmasq_set
   load_nat
+  perp_set
   #echo "Usage: $0 (start|stop|restart|kill|show)"
   #exit 1
   ;;
