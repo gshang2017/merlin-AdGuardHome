@@ -5,7 +5,7 @@ eval `dbus export adguardhome_enable`
 alias echo_date='echo 【$(TZ=UTC-8 date -R +%Y年%m月%d日\ %X)】:'
 
 get_latest_release() {
-  curl --silent "https://api.github.com/repos/gshang2017/merlin-AdGuardHome/releases/latest " | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/'
+  curl --silent https://api.github.com/repos/gshang2017/merlin-AdGuardHome/releases/latest | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/'
 }
 
 install_adguardhome(){

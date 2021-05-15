@@ -5,8 +5,8 @@
 source /koolshare/scripts/base.sh
 export PERP_BASE=/koolshare/perp
 alias echo_date='echo 【$(TZ=UTC-8 date -R +%Y年%m月%d日\ %X)】:'
-version="1.1"
-binversion=$(echo `/koolshare/adguardhome/adguardhome --version`| sed s/", channel release, arch linux arm v5"//g| sed  s/"AdGuard Home, version "//g )
+version="1.2"
+binversion=$(echo `/koolshare/adguardhome/adguardhome --version`| sed s/", channel release, arch linux arm v5"//g| sed  s/"AdGuard Home, version "//g | sed  s/"v"//g)
 eval `dbus export adguardhome_enable`
 eval `dbus export adguardhome_bin_auto_update`
 eval `dbus export adguardhome_dnsmasq_set`

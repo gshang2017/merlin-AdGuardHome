@@ -9,7 +9,7 @@ eval `dbus export adguardhome_bin_version`
 # 更新adguardhome二进制
 
 get_latest_release() {
-  curl --silent "https://api.github.com/repos/AdguardTeam/AdGuardHome/releases/latest " | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/'
+  curl --silent https://api.github.com/repos/AdguardTeam/AdGuardHome/releases/latest | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/'
 }
 check_update_adguardhome(){
   local lastver oldver
@@ -18,7 +18,7 @@ check_update_adguardhome(){
     if [ -n "$adguardhome_bin_version" ]; then
       oldver="v$adguardhome_bin_version"
     else
-      oldver="v$(echo `/koolshare/adguardhome/adguardhome --version`| sed s/", channel release, arch linux arm v5"//g| sed  s/"AdGuard Home, version "//g )"
+      oldver="v$(echo `/koolshare/adguardhome/adguardhome --version`| sed s/", channel release, arch linux arm v5"//g| sed  s/"AdGuard Home, version "//g | sed  s/"v"//g )"
     fi
   if [ -n "$lastver" ]; then
     echo_date 当前版本：$oldver
