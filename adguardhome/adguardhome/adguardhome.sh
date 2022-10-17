@@ -1,12 +1,12 @@
 #!/bin/sh
 
+# 版本号定义
+version="1.3"
 # 引用环境变量等
 
 source /koolshare/scripts/base.sh
 export PERP_BASE=/koolshare/perp
 alias echo_date='echo 【$(TZ=UTC-8 date -R +%Y年%m月%d日\ %X)】:'
-version="1.2"
-binversion=$(echo `/koolshare/adguardhome/adguardhome --version`| sed s/", channel release, arch linux arm v5"//g| sed  s/"AdGuard Home, version "//g | sed  s/"v"//g)
 eval `dbus export adguardhome_enable`
 eval `dbus export adguardhome_bin_auto_update`
 eval `dbus export adguardhome_dnsmasq_set`
@@ -22,6 +22,7 @@ write_adguardhome_version(){
 
 # 写入程序版本号
 write_adguardhome_bin_version(){
+  binversion=$(echo `/koolshare/adguardhome/adguardhome --version`| sed s/", channel release, arch linux arm v5"//g| sed  s/"AdGuard Home, version "//g | sed  s/"v"//g)
   dbus set adguardhome_bin_version="$binversion"
 }
 
@@ -37,8 +38,11 @@ dns_show_set(){
 # 启动adguardhome主程序
 start_adguardhome(){
   # creat start_up file
-  if [ ! -L "/koolshare/init.d/S300adguardhome.sh" ]; then
-      ln -sf /koolshare/adguardhome/adguardhome.sh /koolshare/init.d/S300adguardhome.sh
+  if [ ! -L "/koolshare/init.d/S99adguardhome.sh" ]; then
+      if [ `ls /koolshare/init.d|grep "adguardhome.sh"|wc -l` -gt 0 ]; then
+          rm /koolshare/init.d/*adguardhome.sh
+      fi
+      ln -sf /koolshare/adguardhome/adguardhome.sh /koolshare/init.d/S99adguardhome.sh
   fi
   #kill adguardhome 主程序
   kill -9 `pidof adguardhome` >/dev/null 2>&1 &
@@ -250,8 +254,8 @@ auto_start(){
 		chmod +x /jffs/scripts/wan-start
 	fi
 
-	startss=$(cat /jffs/scripts/wan-start | grep "/koolshare/scripts/adguardhome_config.sh")
-	if [ -z "$startss" ];then
+	startadguardhome=$(cat /jffs/scripts/wan-start | grep "/koolshare/scripts/adguardhome_config.sh")
+	if [ -z "$startadguardhome" ];then
 		#添加wan-start触发事件...
 		sed -i '2a sh /koolshare/scripts/adguardhome_config.sh' /jffs/scripts/wan-start
     chmod +x /jffs/scripts/wan-start
@@ -264,7 +268,7 @@ case $ACTION in
 start)
   #此处为开机自启动设计，只有软件中心adguardhome开启，才会启动adguardhome
   if [ "$adguardhome_enable" == "1" ];then
-  	write_adguardhome_version
+    write_adguardhome_version
     write_adguardhome_bin_version
     dns_show_set
     start_adguardhome
