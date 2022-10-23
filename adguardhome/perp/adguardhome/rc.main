@@ -5,54 +5,53 @@ eval `dbus export adguardhome_port`
 eval `dbus export adguardhome_work_dir`
 eval `dbus export adguardhome_dns_port`
 
-
 exec 2>&1
 if test ${1} = 'start' ; then
-  if [ "$adguardhome_enable" == "1" ];then
-    #检查端口设置
-    if [ `[ -z $adguardhome_port ] && echo Null || echo NotNull` == "NotNull" ];then
-        adg_port=$adguardhome_port
-    else
-        adg_port=3000
-        dbus set adguardhome_port=3000
-    fi
-    #检查工作目录设置
-    if [ `[ -z $adguardhome_work_dir ] && echo Null || echo NotNull` == "NotNull" ];then
-        adg_workdir=$adguardhome_work_dir
-    else
-        adg_workdir=/tmp/adguardhome_workdir/
-        dbus set adguardhome_work_dir=/tmp/adguardhome_workdir/
-    fi
-    #检查工作目录状态
-    if [ ! -d $adg_workdir ] ;  then
-        mkdir -p $adg_workdir
-    fi
-    #更改DNS端口设置
-    if [  -e /koolshare/adguardhome/AdGuardHome.yaml ];then
-        dbus set adguardhome_dns_enable=1
-        if [ `[ -z $adguardhome_dns_port ] && echo Null || echo NotNull` == "NotNull" ];then
-            adg_dns_port=$adguardhome_dns_port
-        else
-            adg_dns_port=153
-            dbus set adguardhome_dns_port=153
-        fi
-        adg_dns_port_old_1="`grep -wn "port:" /koolshare/adguardhome/AdGuardHome.yaml`"
-        adg_dns_port_old="`echo ${adg_dns_port_old_1##*":"}`"
-        if [  "$adg_dns_port" != "$adg_dns_port_old" ];then
-            sed -i "s/\bport\b: $adg_dns_port_old/port: $adg_dns_port/g"   /koolshare/adguardhome/AdGuardHome.yaml
-        fi
-    else
-        dbus set adguardhome_dns_enable=0
-    fi
-    #启动程序
-    status=`ps|grep  "adguardhome --no-check-update"|grep -v "grep"|wc -l`
-    if [ $status -gt 1 ];then
-        ps|grep  "adguardhome --no-check-update"|grep -v "grep"|awk '{print $1}'|xargs kill -9 >/dev/null 2>&1
-        exec /koolshare/adguardhome/adguardhome --no-check-update -w $adg_workdir  -p $adg_port -c /koolshare/adguardhome/AdGuardHome.yaml
-    elif [ $status -eq 0 ];then
-        exec /koolshare/adguardhome/adguardhome --no-check-update -w $adg_workdir  -p $adg_port -c /koolshare/adguardhome/AdGuardHome.yaml
-    fi
-  fi
+	if [ "$adguardhome_enable" == "1" ];then
+		#检查端口设置
+		if [ `[ -z $adguardhome_port ] && echo Null || echo NotNull` == "NotNull" ];then
+			adg_port=$adguardhome_port
+		else
+			adg_port=3000
+			dbus set adguardhome_port=3000
+		fi
+		#检查工作目录设置
+		if [ `[ -z $adguardhome_work_dir ] && echo Null || echo NotNull` == "NotNull" ];then
+			adg_workdir=$adguardhome_work_dir
+		else
+			adg_workdir=/tmp/adguardhome_workdir/
+			dbus set adguardhome_work_dir=/tmp/adguardhome_workdir/
+		fi
+		#检查工作目录状态
+		if [ ! -d $adg_workdir ] ;  then
+			mkdir -p $adg_workdir
+		fi
+		#更改DNS端口设置
+		if [  -e /koolshare/adguardhome/AdGuardHome.yaml ];then
+			dbus set adguardhome_dns_enable=1
+			if [ `[ -z $adguardhome_dns_port ] && echo Null || echo NotNull` == "NotNull" ];then
+				adg_dns_port=$adguardhome_dns_port
+			else
+				adg_dns_port=153
+				dbus set adguardhome_dns_port=153
+			fi
+			adg_dns_port_old_1="`grep -wn "port:" /koolshare/adguardhome/AdGuardHome.yaml`"
+			adg_dns_port_old="`echo ${adg_dns_port_old_1##*":"}`"
+			if [  "$adg_dns_port" != "$adg_dns_port_old" ];then
+				sed -i "s/\bport\b: $adg_dns_port_old/port: $adg_dns_port/g"   /koolshare/adguardhome/AdGuardHome.yaml
+			fi
+		else
+			dbus set adguardhome_dns_enable=0
+		fi
+		#启动程序		
+		status=`ps|grep  "adguardhome --no-check-update"|grep -v "grep"|wc -l`
+		if [ $status -gt 1 ];then
+			ps|grep  "adguardhome --no-check-update"|grep -v "grep"|awk '{print $1}'|xargs kill -9 >/dev/null 2>&1
+			exec /koolshare/adguardhome/adguardhome --no-check-update -w $adg_workdir  -p $adg_port -c /koolshare/adguardhome/AdGuardHome.yaml
+		elif [ $status -eq 0 ];then
+			exec /koolshare/adguardhome/adguardhome --no-check-update -w $adg_workdir  -p $adg_port -c /koolshare/adguardhome/AdGuardHome.yaml
+		fi
+	fi
 fi
 
 exit 0

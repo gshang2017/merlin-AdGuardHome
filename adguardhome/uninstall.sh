@@ -12,7 +12,7 @@ rm -rf /koolshare/scripts/adguardhome_update.sh
 rm -rf /koolshare/webs/Module_adguardhome.asp
 rm -rf /koolshare/res/icon-adguardhome.png
 rm -rf /koolshare/res/adguardhome_check.htm
-rm -rf /koolshare/init.d/S300adguardhome.sh
+rm -rf /koolshare/init.d/S99adguardhome.sh
 rm -rf /tmp/adguardhome_workdir
 
 dbus remove adguardhome_enable
@@ -25,6 +25,8 @@ dbus remove adguardhome_dns_port
 dbus remove adguardhome_bin_auto_update
 dbus remove adguardhome_dnsmasq_set
 dbus remove adguardhome_perp_set
+dbus remove adguardhome_upx_set
+dbus remove adguardhome_shadowsocks_patch_set
 dbus remove softcenter_module_adguardhome_name
 
 # remove start up command

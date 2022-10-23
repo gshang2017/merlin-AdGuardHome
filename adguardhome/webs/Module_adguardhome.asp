@@ -80,13 +80,15 @@ var params_input = ["adguardhome_work_dir", "adguardhome_port", "adguardhome_dns
 function init() {
   show_menu();
   buildswitch();
-  toggle_func();	
+  toggle_func();
   generate_link();
   set_show_status();
   set_show_dns();
-  auto_bin_update(); 
-  adguardhome_dnsmasq_set();   
+  auto_bin_update();
+  adguardhome_dnsmasq_set();
   adguardhome_perp_set();
+  adguardhome_upx_set();
+  adguardhome_shadowsocks_patch_set();
   setTimeout("get_adguardhome_status()", 1000);
   conf2obj();
 }
@@ -111,7 +113,7 @@ function buildswitch(){
 
     }else{
       document.form.adguardhome_enable.value = 0;
-      document.getElementById('adguardhome_detail').style.display = "none";	  
+      document.getElementById('adguardhome_detail').style.display = "none";
     }
   });
 }
@@ -454,6 +456,14 @@ function  adguardhome_perp_set() {
       check_selected("adguardhome_perp_set", db_adguardhome_.adguardhome_perp_set);
 }
 
+function  adguardhome_upx_set() {
+      check_selected("adguardhome_upx_set", db_adguardhome_.adguardhome_upx_set);
+}
+
+function  adguardhome_shadowsocks_patch_set() {
+      check_selected("adguardhome_shadowsocks_patch_set", db_adguardhome_.adguardhome_shadowsocks_patch_set);
+}
+
 function check_selected(obj, m) {
     var o = document.getElementById(obj);
     for (var c = 0; c < o.length; c++) {
@@ -471,40 +481,40 @@ function toggle_func() {
 		function() {
 			$j('.show-btn1').addClass('active');
 			$j('.show-btn2').removeClass('active');
-			$j('.show-btn3').removeClass('active');			
+			$j('.show-btn3').removeClass('active');
 			E("adguardhome_detail_table1").style.display = "";
 			E("adguardhome_detail_table2").style.display = "none";
-			E("adguardhome_detail_table3").style.display = "none";			
+			E("adguardhome_detail_table3").style.display = "none";
 			E("warnnote1").style.display = "";
 			E("warnnote2").style.display = "none";
-			E("warnnote3").style.display = "none";			
+			E("warnnote3").style.display = "none";
 		});
 	$j(".show-btn2").click(
 		//dns pannel
 		function() {
 			$j('.show-btn1').removeClass('active');
 			$j('.show-btn2').addClass('active');
-			$j('.show-btn3').removeClass('active');			
+			$j('.show-btn3').removeClass('active');
 			E("adguardhome_detail_table1").style.display = "none";
 			E("adguardhome_detail_table2").style.display = "";
-			E("adguardhome_detail_table3").style.display = "none";			
+			E("adguardhome_detail_table3").style.display = "none";
 			E("warnnote1").style.display = "none";
 			E("warnnote2").style.display = "";
-			E("warnnote3").style.display = "none";			
+			E("warnnote3").style.display = "none";
 		});
 	$j(".show-btn3").click(
 		//dns pannel
 		function() {
 			$j('.show-btn1').removeClass('active');
-			$j('.show-btn2').removeClass('active');			
+			$j('.show-btn2').removeClass('active');
 			$j('.show-btn3').addClass('active');
 			E("adguardhome_detail_table1").style.display = "none";
 			E("adguardhome_detail_table2").style.display = "none";
-			E("adguardhome_detail_table3").style.display = "";			
+			E("adguardhome_detail_table3").style.display = "";
 			E("warnnote1").style.display = "none";
 			E("warnnote2").style.display = "none";
-			E("warnnote3").style.display = "";			
-		});		
+			E("warnnote3").style.display = "";
+		});
 }
 
 function reload_Soft_Center(){
@@ -603,10 +613,10 @@ location.href = "/Main_Soft_center.asp";
 							<tr width="235px">
 								<td colspan="4" cellpadding="0" cellspacing="0" style="padding:0" border="1" bordercolor="#000">
 									<input id="show-btn1" class="show-btn1" style="cursor:pointer"   type="button" value="基本设置" />
-									<input id="show-btn2" class="show-btn2"  style="cursor:pointer"    type="button" value="DNS设置" />   
+									<input id="show-btn2" class="show-btn2"  style="cursor:pointer"    type="button" value="DNS设置" />
 									<input id="show-btn3" class="show-btn3"  style="cursor:pointer"    type="button" value="其它设置" />
-								</td>							
-							</tr>						
+								</td>
+							</tr>
 						</table>
 					  </div>
 					  <table id="adguardhome_detail_table1"  style="margin:-1px 0px 0px 0px;" width="100%" border="1" align="center" cellpadding="4" cellspacing="0" bordercolor="#6b8fa3" class="FormTable"   >
@@ -635,7 +645,7 @@ location.href = "/Main_Soft_center.asp";
                                 <small>&nbsp;&nbsp;默认: 153 ［<i>配置文件存在时才生效</i>］ </small>
                             </td>
                           </tr>
- 
+
                           <tr id="adguardhome_bin_update_tr">
                                                     <th>WEB管理/程序更新</th>
                                                     <td>
@@ -645,58 +655,81 @@ location.href = "/Main_Soft_center.asp";
 						    							<a class="adguardhome_btn_update">自动更新</a>
  						    							<a><select id="adguardhome_bin_auto_update" name="adguardhome_bin_auto_update" class="input_option"  >  <option value="0">否</option>  <option value="1">是</option> </select></a>
 						    					   </td>
-                         </tr>						 
+                         </tr>
 					  </table>
 					  <table  id="adguardhome_detail_table2"  style="display:none;margin:-1px 0px 0px 0px;" width="100%" border="1" align="center" cellpadding="4" cellspacing="0" bordercolor="#6b8fa3" class="FormTable"   >
                           <tr id="adguardhome_dnsmasq_set_tr"  >
                             <th>选项</th>
                             <td>
-                                <select   id="adguardhome_dnsmasq_set" name="adguardhome_dnsmasq_set" class="input_option"  > 
-       								<option value="0">【0】关闭</option> 
-									<option value="1">【1】ipv4-将dnsmasq的server地址设为AdGuardHome监听地址</option> 
-									<option value="2">【2】ipv4-将dnsmasq的server地址设为AdGuardHome监听地址并禁用dnsmasq缓存</option> 									
-									<option value="3">【3】ipv4-劫持53端口至AdGuardHome监听地址</option> 
+                                <select   id="adguardhome_dnsmasq_set" name="adguardhome_dnsmasq_set" class="input_option"  >
+       								<option value="0">【0】关闭</option>
+									<option value="1">【1】ipv4-将dnsmasq的server地址设为AdGuardHome监听地址</option>
+									<option value="2">【2】ipv4-将dnsmasq的server地址设为AdGuardHome监听地址并禁用dnsmasq缓存</option>
+									<option value="3">【3】ipv4-劫持53端口至AdGuardHome监听地址</option>
 									<option value="4">【4】ipv4,6-将dnsmasq的server地址设为AdGuardHome监听地址</option>
-									<option value="5">【5】ipv4,6-将dnsmasq的server地址设为AdGuardHome监听地址并禁用dnsmasq缓存</option>									
+									<option value="5">【5】ipv4,6-将dnsmasq的server地址设为AdGuardHome监听地址并禁用dnsmasq缓存</option>
 								</select>
                             </td>
-                          </tr>														
-					  </table>	
+                          </tr>
+					  </table>
 					  <table  id="adguardhome_detail_table3"  style="display:none;margin:-1px 0px 0px 0px;" width="100%" border="1" align="center" cellpadding="4" cellspacing="0" bordercolor="#6b8fa3" class="FormTable"   >
                           <tr id="adguardhome_perp_set_tr"  >
                             <th>守护进程</th>
                             <td>
-                                <select   id="adguardhome_perp_set" name="adguardhome_perp_set" class="input_option"  > 
-       								<option value="0">关闭</option> 
-									<option value="1">开启</option> 								
+                                <select   id="adguardhome_perp_set" name="adguardhome_perp_set" class="input_option"  >
+       								<option value="0">关闭</option>
+									<option value="1">每分钟</option>
+									<option value="2">每10分钟</option>
+									<option value="3">每30分钟</option>
+									<option value="4">每1小时</option>
 								</select>
                             </td>
-                          </tr>														
-					  </table>						  
+                          </tr>
+                          <tr id="adguardhome_upx_set_tr"  >
+                            <th>UPX压缩</th>
+                            <td>
+                                <select   id="adguardhome_upx_set" name="adguardhome_upx_set" class="input_option"  >
+       								<option value="0">关闭</option>
+									<option value="1">开启</option>
+								</select>
+                            </td>
+                          </tr>
+                          <tr id="adguardhome_shadowsocks_patch_set_tr"  >
+                            <th>科学上网中国DNS自定义端口补丁</th>
+                            <td>
+                                <select   id="adguardhome_shadowsocks_patch_set" name="adguardhome_shadowsocks_patch_set" class="input_option"  >
+       								<option value="0">关闭</option>
+									<option value="1">开启</option>
+								</select>
+                            </td>
+                          </tr>						  
+					  </table>
 					  <div id="warnnote1">
 						  <div id="adguardhome_note1"class="SimpleNote">
-							  <i><li>DNS端口仅支持非53端口，默认［153］。</li></i>							
+							  <i><li>DNS端口仅支持非53端口，默认［153］。</li></i>
 							  <i><li>初次设置需访问Web管理界面进行配置，点击刷新设置界面按钮会重新显示当前设置。</li></i>
 							  <i><li>勿将工作目录设定到jffs分区，由于路由jffs分区不支持mmap()模块所需的系统调用，插件仅将配置文件放在/koolshare/adguardhome目录，将AdGuardHome工作目录默认设置到/tmp/adguardhome_workdir，重启路由后丢失AdGuardHome统计数据。</li></li>
-							  <i><li>更新AdGuardHome程序仅检查AdGuardHome程序github的Latest标签不含Pre预览版。</li></li> 
-							  <i><li>设置自动更新后会定时在05:00自动更新AdGuardHome程序。</li></li> 
+							  <i><li>更新AdGuardHome程序仅检查AdGuardHome程序github的Latest标签不含Pre预览版。</li></li>
+							  <i><li>设置自动更新后会定时在05:00自动更新AdGuardHome程序。</li></li>
 						  </div>
 					  </div>
 					  <div id="warnnote2" style="display: none;">
-						  <div id="adguardhome_note2" class="SimpleNote" >							
-							  <i><li>与科学上网的DNS冲突。使用科学上网请勿同时开启此选项。科学上网的DNS设定里中国DNS可自定义为AdGuardHome监听地址。科学上网（4.2.2）不支持非53端口自定义DNS，需自己修改科学上网文件。</li></li>	
+						  <div id="adguardhome_note2" class="SimpleNote" >
+							  <i><li>与科学上网的DNS冲突。使用科学上网请勿同时开启此选项。可在其它设置里开启科学上网（4.2.2）中国DNS自定义端口补丁。中国DNS自定义设置为AdGuardHome监听地址，例如192.168.1.1#153</li></li>
 							  <i><li>选项【1】仅设置ipv4，将dnsmasq的server地址设为AdGuardHome监听地址。AdGuardHome无法显示客服端ip地址。</li></li>
 							  <i><li>选项【2】仅设置ipv4，将dnsmasq的server地址设为AdGuardHome监听地址并禁用dnsmasq缓存。AdGuardHome无法显示客服端ip地址。</li></li>
-							  <i><li>选项【3】仅设置ipv4，将劫持53端口至AdGuardHome监听地址。</li></li>							 
+							  <i><li>选项【3】仅设置ipv4，将劫持53端口至AdGuardHome监听地址。</li></li>
 						  	  <i><li>选项【4】设置ipv4和ipv6，将dnsmasq的server地址设为AdGuardHome监听地址。AdGuardHome无法显示客服端ip地址。</li></li>
 						  	  <i><li>选项【5】设置ipv4和ipv6，将dnsmasq的server地址设为AdGuardHome监听地址并禁用dnsmasq缓存。AdGuardHome无法显示客服端ip地址。</li></li>
 						  </div>
 					  </div>
 					  <div id="warnnote3" style="display: none;">
-						  <div id="adguardhome_note3" class="SimpleNote" >							
-							  <i><li>开启后每分钟检测软件中心守护进程状态，防止因软件中心挂掉导致AdGuardHome程序无法启动。</li></li>
+						  <div id="adguardhome_note3" class="SimpleNote" >
+							  <i><li>开启守护进程后根据设置时间检测cron任务以及软件中心守护进程状态，防止cron任务丢失以及因软件中心挂掉导致AdGuardHome程序无法启动。</li></li>
+							  <i><li>开启UPX压缩后,更新程序时会用UPX压缩AdGuardHome程序。</li></li>
+							  <i><li>开启科学上网中国DNS自定义端口补丁后,科学上网(4.2.2)中国DNS支持自定义端口。例如192.168.1.1#153</li></li>
 						  </div>
-					  </div>					  
+					  </div>
 					</div>
                     <div style="margin-left:5px;margin-top:10px;margin-bottom:10px"><img src="/images/New_ui/export/line_export.png"></div>
                     <div class="apply_gen">

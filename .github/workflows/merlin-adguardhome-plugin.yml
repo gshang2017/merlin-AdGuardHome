@@ -19,13 +19,15 @@ jobs:
         run: |
           echo "PLUGIN_VER=$(echo `grep -wn "version="  /home/runner/work/merlin-AdGuardHome/merlin-AdGuardHome/adguardhome/adguardhome/adguardhome.sh`|awk -F: '{print $2}'| sed s/"version="//g| sed  s/"\""//g )" >> $GITHUB_ENV
 
-
       - name: 'build_adguardhome.tar.gz'
         run: |
           lastver=$(curl --silent https://api.github.com/repos/AdguardTeam/AdGuardHome/releases/latest | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
           curl  --retry 2  -o /tmp/adguardhome_update.tar.gz -L  https://github.com/AdguardTeam/AdGuardHome/releases/download/${lastver}/AdGuardHome_linux_armv5.tar.gz
           mkdir -p /tmp/adguardhome_update
           tar xzf  /tmp/adguardhome_update.tar.gz -C /tmp/adguardhome_update
+          wget -P /tmp https://github.com/upx/upx/releases/download/v3.94/upx-3.94-amd64_linux.tar.xz
+          tar -C /tmp -Jxpf /tmp/upx-3.94-amd64_linux.tar.xz
+          /tmp/upx-3.94-amd64_linux/upx /tmp/adguardhome_update/AdGuardHome/AdGuardHome
           cp -rf /tmp/adguardhome_update/AdGuardHome/AdGuardHome /home/runner/work/merlin-AdGuardHome/merlin-AdGuardHome/adguardhome/adguardhome/adguardhome
           cd /home/runner/work/merlin-AdGuardHome/merlin-AdGuardHome/
           tar -czvf adguardhome.tar.gz adguardhome
