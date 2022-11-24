@@ -3,6 +3,7 @@
 eval `dbus export adguardhome_enable`
 eval `dbus export adguardhome_port`
 eval `dbus export adguardhome_work_dir`
+eval `dbus export adguardhome_update_dir`
 eval `dbus export adguardhome_dns_port`
 
 exec 2>&1
@@ -21,6 +22,13 @@ if test ${1} = 'start' ; then
 		else
 			adg_workdir=/tmp/adguardhome_workdir/
 			dbus set adguardhome_work_dir=/tmp/adguardhome_workdir/
+		fi
+		#检查更新目录设置
+		if [ `[ -z $adguardhome_update_dir ] && echo Null || echo NotNull` == "NotNull" ];then
+			adg_updatedir=$adguardhome_update_dir
+		else
+			adg_updatedir=/tmp
+			dbus set adguardhome_update_dir=/tmp
 		fi
 		#检查工作目录状态
 		if [ ! -d $adg_workdir ] ;  then

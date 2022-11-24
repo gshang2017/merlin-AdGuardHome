@@ -21,6 +21,7 @@ dbus remove adguardhome_bin_version
 dbus remove adguardhome_dns_enable
 dbus remove adguardhome_port
 dbus remove adguardhome_work_dir
+dbus remove adguardhome_update_dir
 dbus remove adguardhome_dns_port
 dbus remove adguardhome_bin_auto_update
 dbus remove adguardhome_dnsmasq_set

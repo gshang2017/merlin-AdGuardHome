@@ -5,6 +5,7 @@
 source /koolshare/scripts/base.sh
 alias echo_date='echo 【$(TZ=UTC-8 date -R +%Y年%m月%d日\ %X)】:'
 eval `dbus export adguardhome_upx_set`
+eval `dbus export adguardhome_update_dir`
 
 # 更新adguardhome二进制
 
@@ -28,32 +29,36 @@ check_update_adguardhome(){
 			sleep 3
 			echo XU6J03M6
 		else
-			if [ -e  "/tmp/adguardhome_update.tar.gz" ] ; then
-				rm -rf /tmp/adguardhome_update.tar.gz
+			if [ -e  "$adguardhome_update_dir/adguardhome_update.tar.gz" ] ; then
+				rm -rf $adguardhome_update_dir/adguardhome_update.tar.gz
 			fi
 			echo_date "准备升级到最新版本，开始下载"
-			curl  --retry 2  -o /tmp/adguardhome_update.tar.gz -L  https://github.com/AdguardTeam/AdGuardHome/releases/download/${lastver}/AdGuardHome_linux_armv5.tar.gz
-			#wget --no-check-certificate --timeout=8 --tries=2 -O - "https://github.com/AdguardTeam/AdGuardHome/releases/download/${lastver}/AdGuardHome_linux_armv5.tar.gz" > /tmp/adguardhome_update.tar.gz
-			if [ -e  "/tmp/adguardhome_update.tar.gz" ] ; then
+			curl  --retry 2  -o $adguardhome_update_dir/adguardhome_update.tar.gz -L  https://github.com/AdguardTeam/AdGuardHome/releases/download/${lastver}/AdGuardHome_linux_armv5.tar.gz
+			#wget --no-check-certificate --timeout=8 --tries=2 -O - "https://github.com/AdguardTeam/AdGuardHome/releases/download/${lastver}/AdGuardHome_linux_armv5.tar.gz" > $adguardhome_update_dir/adguardhome_update.tar.gz
+			if [ -e  "$adguardhome_update_dir/adguardhome_update.tar.gz" ] ; then
 				echo_date "最新版本已下载，准备安装"
-				[ -d "/tmp/adguardhome_update" ] && rm -rf /tmp/adguardhome_update
-				mkdir -p /tmp/adguardhome_update
-				tar xzf  /tmp/adguardhome_update.tar.gz -C /tmp/adguardhome_update
+				[ -d "$adguardhome_update_dir/adguardhome_update" ] && rm -rf $adguardhome_update_dir/adguardhome_update
+				mkdir -p $adguardhome_update_dir/adguardhome_update
+				tar xzf  $adguardhome_update_dir/adguardhome_update.tar.gz -C $adguardhome_update_dir/adguardhome_update
 				if [ "$adguardhome_upx_set" == "1" ] ;then
 					echo_date "正在使用upx压缩AdGuardHome程序"
-					/koolshare/adguardhome/upx /tmp/adguardhome_update/AdGuardHome/AdGuardHome
+					/koolshare/adguardhome/upx $adguardhome_update_dir/adguardhome_update/AdGuardHome/AdGuardHome
 					echo_date "已完成压缩AdGuardHome程序"
 				fi
-				/koolshare/adguardhome/adguardhome.sh stop
-				echo_date "正在安装AdGuardHome程序"
-				cp -rf /tmp/adguardhome_update/AdGuardHome/AdGuardHome /koolshare/adguardhome/adguardhome
-				chmod a+x /koolshare/adguardhome/adguardhome
-				echo `/koolshare/adguardhome/adguardhome --version`| sed s/", channel release, arch linux arm v5"//g| sed  s/"AdGuard Home, version "//g | sed  s/"v"//g > /koolshare/adguardhome/binversion
-				rm -rf /tmp/adguardhome_update
-				rm -rf /tmp/adguardhome_update.tar.gz
-				echo_date "最新版本已安装，准备重启插件"
-				dbus set adguardhome_bin_version=$lastver
-				/koolshare/adguardhome/adguardhome.sh restart
+				if [  $($adguardhome_update_dir/adguardhome_update/AdGuardHome/AdGuardHome --version | grep "version" |wc -l) == 1 ];then
+					/koolshare/adguardhome/adguardhome.sh stop
+					echo_date "正在安装AdGuardHome程序"
+					cp -rf $adguardhome_update_dir/adguardhome_update/AdGuardHome/AdGuardHome /koolshare/adguardhome/adguardhome
+					chmod a+x /koolshare/adguardhome/adguardhome
+					echo `/koolshare/adguardhome/adguardhome --version`| sed s/", channel release, arch linux arm v5"//g| sed  s/"AdGuard Home, version "//g | sed  s/"v"//g > /koolshare/adguardhome/binversion
+					rm -rf $adguardhome_update_dir/adguardhome_update
+					rm -rf $adguardhome_update_dir/adguardhome_update.tar.gz
+					echo_date "最新版本已安装，准备重启插件"
+					dbus set adguardhome_bin_version=$lastver
+					/koolshare/adguardhome/adguardhome.sh restart
+				else
+					echo_date "压缩AdGuardHome程序错误,无法更新"
+				fi
 			else
 				echo_date "最新版本下载失败，请检查网络到github的连通后再试！"
 				sleep 3

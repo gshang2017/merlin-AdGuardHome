@@ -68,6 +68,30 @@ input[type=button]:focus {
 .show-btn1:hover, .show-btn2:hover, .show-btn3:hover, .active {
 	background: #2f3a3e;
 }
+.input_adg_table{
+	margin-left:2px;
+	padding-left:0.4em;
+	height:21px;
+	width:158.2px;
+	line-height:23px \9;	/*IE*/
+	font-size:13px;
+	font-family: Lucida Console;
+	background-image:none;
+	background-color: #576d73;
+	border:1px solid gray;
+	color:#FFFFFF;
+}
+.SimpleNote { padding:5px 10px;}
+.input_option{
+	height:25px;
+	background-color:#576D73;
+	border-top-width:1px;
+	border-bottom-width:1px;
+	border-color:#888;
+	color:#FFFFFF;
+	font-family: Lucida Console;
+	font-size:13px;
+}
 </style>
 
 <script>
@@ -76,7 +100,7 @@ var noChange = 0;
 var noChange2 = 0;
 var x = 5;
 var $j = jQuery.noConflict();
-var params_input = ["adguardhome_work_dir", "adguardhome_port", "adguardhome_dns_port"];
+var params_input = ["adguardhome_work_dir","adguardhome_update_dir", "adguardhome_port", "adguardhome_dns_port"];
 function init() {
   show_menu();
   buildswitch();
@@ -627,21 +651,28 @@ location.href = "/Main_Soft_center.asp";
                           <tr id="adguardhome_work_dir_tr" >
                             <th>工作目录</th>
                             <td>
-                                <input type="text" class="input_ss_table" style="width:auto;" size="30" id="adguardhome_work_dir" name="adguardhome_work_dir" maxlength="" value="<% dbus_get_def("adguardhome_work_dir", "/tmp/adguardhome_workdir/"); %>" >
+                                <input type="text" class="input_adg_table" style="width:auto;" size="30" id="adguardhome_work_dir" name="adguardhome_work_dir" maxlength="" value="<% dbus_get_def("adguardhome_work_dir", "/tmp/adguardhome_workdir/"); %>" >
                                 <small>&nbsp;&nbsp;默认: /tmp/adguardhome_workdir/ </small>
+                            </td>
+                          </tr>
+                          <tr id="adguardhome_update_dir_tr" >
+                            <th>更新目录</th>
+                            <td>
+                                <input type="text" class="input_adg_table" style="width:auto;" size="30" id="adguardhome_update_dir" name="adguardhome_update_dir" maxlength="" value="<% dbus_get_def("adguardhome_update_dir", "/tmp"); %>" >
+                                <small>&nbsp;&nbsp;默认: /tmp </small>
                             </td>
                           </tr>
                           <tr id="adguardhome_port_tr" >
                             <th>访问端口</th>
                             <td>
-                                <input type="text" class="input_ss_table" style="width:auto;" size="30" id="adguardhome_port" name="adguardhome_port" maxlength="" value="<% dbus_get_def("adguardhome_port", "3000"); %>" >
+                                <input type="text" class="input_adg_table" style="width:auto;" size="30" id="adguardhome_port" name="adguardhome_port" maxlength="" value="<% dbus_get_def("adguardhome_port", "3000"); %>" >
                                 <small>&nbsp;&nbsp;默认: 3000 </small>
                             </td>
                           </tr>
                           <tr id="adguardhome_dns_port_tr" style="display: none;" >
                             <th>DNS端口</th>
                             <td>
-                                <input type="text" class="input_ss_table" style="width:auto;" size="30" id="adguardhome_dns_port" name="adguardhome_dns_port" maxlength="" value="<% dbus_get_def("adguardhome_dns_port", "153"); %>" >
+                                <input type="text" class="input_adg_table" style="width:auto;" size="30" id="adguardhome_dns_port" name="adguardhome_dns_port" maxlength="" value="<% dbus_get_def("adguardhome_dns_port", "153"); %>" >
                                 <small>&nbsp;&nbsp;默认: 153 ［<i>配置文件存在时才生效</i>］ </small>
                             </td>
                           </tr>
@@ -702,13 +733,14 @@ location.href = "/Main_Soft_center.asp";
 									<option value="1">开启</option>
 								</select>
                             </td>
-                          </tr>						  
+                          </tr>
 					  </table>
 					  <div id="warnnote1">
 						  <div id="adguardhome_note1"class="SimpleNote">
 							  <i><li>DNS端口仅支持非53端口，默认［153］。</li></i>
 							  <i><li>初次设置需访问Web管理界面进行配置，点击刷新设置界面按钮会重新显示当前设置。</li></i>
 							  <i><li>勿将工作目录设定到jffs分区，由于路由jffs分区不支持mmap()模块所需的系统调用，插件仅将配置文件放在/koolshare/adguardhome目录，将AdGuardHome工作目录默认设置到/tmp/adguardhome_workdir，重启路由后丢失AdGuardHome统计数据。</li></li>
+							  <i><li>将更新目录设置到外置存储可防止upx压缩时出现磁盘空间不足，例如/tmp/mnt/sda1。</li></li>
 							  <i><li>更新AdGuardHome程序仅检查AdGuardHome程序github的Latest标签不含Pre预览版。</li></li>
 							  <i><li>设置自动更新后会定时在05:00自动更新AdGuardHome程序。</li></li>
 						  </div>
