@@ -5,6 +5,7 @@ eval `dbus export adguardhome_port`
 eval `dbus export adguardhome_work_dir`
 eval `dbus export adguardhome_update_dir`
 eval `dbus export adguardhome_dns_port`
+eval `dbus export adguardhome_binary_rollback_version`
 
 exec 2>&1
 if test ${1} = 'start' ; then
@@ -24,11 +25,12 @@ if test ${1} = 'start' ; then
 			dbus set adguardhome_work_dir=/tmp/adguardhome_workdir/
 		fi
 		#检查更新目录设置
-		if [ `[ -z $adguardhome_update_dir ] && echo Null || echo NotNull` == "NotNull" ];then
-			adg_updatedir=$adguardhome_update_dir
-		else
-			adg_updatedir=/tmp
+		if [ `[ -z $adguardhome_update_dir ] && echo Null || echo NotNull` == "Null" ];then
 			dbus set adguardhome_update_dir=/tmp
+		fi
+		#检查程序回退版本设置
+		if [ `[ -z $adguardhome_binary_rollback_version ] && echo Null || echo NotNull` == "Null" ];then
+			dbus set adguardhome_binary_rollback_version=0.107.29
 		fi
 		#检查工作目录状态
 		if [ ! -d $adg_workdir ] ;  then
@@ -51,7 +53,7 @@ if test ${1} = 'start' ; then
 		else
 			dbus set adguardhome_dns_enable=0
 		fi
-		#启动程序		
+		#启动程序
 		status=`ps|grep  "adguardhome --no-check-update"|grep -v "grep"|wc -l`
 		if [ $status -gt 1 ];then
 			ps|grep  "adguardhome --no-check-update"|grep -v "grep"|awk '{print $1}'|xargs kill -9 >/dev/null 2>&1

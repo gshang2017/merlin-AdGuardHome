@@ -100,7 +100,7 @@ var noChange = 0;
 var noChange2 = 0;
 var x = 5;
 var $j = jQuery.noConflict();
-var params_input = ["adguardhome_work_dir","adguardhome_update_dir", "adguardhome_port", "adguardhome_dns_port"];
+var params_input = ["adguardhome_work_dir","adguardhome_update_dir", "adguardhome_port", "adguardhome_dns_port", "adguardhome_binary_rollback_version"];
 function init() {
   show_menu();
   buildswitch();
@@ -171,6 +171,25 @@ function status_update(){
 function adguardhome_binary_update(){
   var dbus = {};
   dbus["SystemCmd"] = "adguardhome_bin_update.sh";
+  dbus["action_mode"] = " Refresh ";
+  dbus["current_page"] = "Module_adguardhome.asp";
+  $j.ajax({
+    type: "POST",
+    url: '/applydb.cgi?p=adguardhome_',
+    contentType: "application/x-www-form-urlencoded",
+    dataType: 'text',
+    data: dbus,
+    success: function(response) {
+        showAGHLoadingBar();
+        noChange2 = 0;
+        setTimeout("get_realtime_log()", 500);
+    }
+  });
+}
+
+function adguardhome_binary_rollback(){
+  var dbus = {};
+  dbus["SystemCmd"] = "adguardhome_bin_rollback.sh";
   dbus["action_mode"] = " Refresh ";
   dbus["current_page"] = "Module_adguardhome.asp";
   $j.ajax({
@@ -681,8 +700,9 @@ location.href = "/Main_Soft_center.asp";
                                                     <th>WEB管理/程序更新</th>
                                                     <td>
                                                         <a type="button" id="adguardhome_web" class="adguardhome_btn" style="cursor:pointer" target="_blank" >访问Web管理界面</a>
-                                                        <a type="button" id="adguardhome_binary_update" class="adguardhome_btn" style="cursor:pointer" onclick="status_update()" >刷新设置界面</a>
-                                                        <a type="button" id="adguardhome_binary_update" class="adguardhome_btn" style="cursor:pointer" onclick="adguardhome_binary_update()" >更新AdGuardHome程序</a>
+                                                        <a type="button" id="status_update" class="adguardhome_btn" style="cursor:pointer" onclick="status_update()" >刷新设置界面</a>
+                                                        <a type="button" id="adguardhome_binary_update" class="adguardhome_btn" style="cursor:pointer" onclick="adguardhome_binary_update()" >更新程序</a>
+                                                        <a type="button" id="adguardhome_binary_rollback" class="adguardhome_btn" style="cursor:pointer" onclick="adguardhome_binary_rollback()" >回退程序</a>
 						    							<a class="adguardhome_btn_update">自动更新</a>
  						    							<a><select id="adguardhome_bin_auto_update" name="adguardhome_bin_auto_update" class="input_option"  >  <option value="0">否</option>  <option value="1">是</option> </select></a>
 						    					   </td>
@@ -734,6 +754,12 @@ location.href = "/Main_Soft_center.asp";
 								</select>
                             </td>
                           </tr>
+                          <tr id="adguardhome_binary_rollback_version_tr"  >
+                            <th>AdGuardHome程序回退版本</th>
+                            <td>
+                                <input type="text" class="input_adg_table" style="width:auto;" size="30" id="adguardhome_binary_rollback_version" name="adguardhome_binary_rollback_version" maxlength="" value="<% dbus_get_def("adguardhome_binary_rollback_version", "0.107.29"); %>" >
+                                <small>&nbsp;&nbsp;默认: 0.107.29 </small>
+                            </td>
 					  </table>
 					  <div id="warnnote1">
 						  <div id="adguardhome_note1"class="SimpleNote">
@@ -741,7 +767,8 @@ location.href = "/Main_Soft_center.asp";
 							  <i><li>初次设置需访问Web管理界面进行配置，点击刷新设置界面按钮会重新显示当前设置。</li></i>
 							  <i><li>勿将工作目录设定到jffs分区，由于路由jffs分区不支持mmap()模块所需的系统调用，插件仅将配置文件放在/koolshare/adguardhome目录，将AdGuardHome工作目录默认设置到/tmp/adguardhome_workdir，重启路由后丢失AdGuardHome统计数据。</li></li>
 							  <i><li>将更新目录设置到外置存储可防止upx压缩时出现磁盘空间不足，例如/tmp/mnt/sda1。</li></li>
-							  <i><li>更新AdGuardHome程序仅检查AdGuardHome程序github的Latest标签不含Pre预览版。</li></li>
+							  <i><li>更新程序仅检查AdGuardHome程序github的Latest标签不含Pre预览版。</li></li>
+                <i><li>回退程序将AdGuardHome程序回退到其它设置里设置的回退版本</li></li>
 							  <i><li>设置自动更新后会定时在05:00自动更新AdGuardHome程序。</li></li>
 						  </div>
 					  </div>

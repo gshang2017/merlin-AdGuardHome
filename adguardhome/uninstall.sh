@@ -9,6 +9,7 @@ rm -rf /koolshare/scripts/adguardhome_bin_update.sh
 rm -rf /koolshare/scripts/adguardhome_status.sh
 rm -rf /koolshare/scripts/adguardhome_set_status.sh
 rm -rf /koolshare/scripts/adguardhome_update.sh
+rm -rf /koolshare/scripts/adguardhome_bin_rollback.sh
 rm -rf /koolshare/webs/Module_adguardhome.asp
 rm -rf /koolshare/res/icon-adguardhome.png
 rm -rf /koolshare/res/adguardhome_check.htm
@@ -29,6 +30,7 @@ dbus remove adguardhome_perp_set
 dbus remove adguardhome_upx_set
 dbus remove adguardhome_shadowsocks_patch_set
 dbus remove softcenter_module_adguardhome_name
+dbus remove adguardhome_binary_rollback_version
 
 # remove start up command
 sed -i '/adguardhome_config.sh/d' /jffs/scripts/wan-start >/dev/null 2>&1
