@@ -768,7 +768,7 @@ location.href = "/Main_Soft_center.asp";
 							  <i><li>勿将工作目录设定到jffs分区，由于路由jffs分区不支持mmap()模块所需的系统调用，插件仅将配置文件放在/koolshare/adguardhome目录，将AdGuardHome工作目录默认设置到/tmp/adguardhome_workdir，重启路由后丢失AdGuardHome统计数据。</li></li>
 							  <i><li>将更新目录设置到外置存储可防止upx压缩时出现磁盘空间不足，例如/tmp/mnt/sda1。</li></li>
 							  <i><li>更新程序仅检查AdGuardHome程序github的Latest标签不含Pre预览版。</li></li>
-                <i><li>回退程序将AdGuardHome程序回退到其它设置里设置的回退版本</li></li>
+                <i><li>回退程序将AdGuardHome程序回退到其它设置里设置的回退版本，需重新配置。</li></li>
 							  <i><li>设置自动更新后会定时在05:00自动更新AdGuardHome程序。</li></li>
 						  </div>
 					  </div>

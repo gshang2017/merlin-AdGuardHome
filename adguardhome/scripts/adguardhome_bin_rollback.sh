@@ -41,6 +41,7 @@ check_rollback_adguardhome(){
 			echo_date "回退版本已安装，准备重启插件"
 			dbus set adguardhome_bin_version=$lastver
 			dbus set adguardhome_bin_auto_update=0
+			mv /koolshare/adguardhome/AdGuardHome.yaml /koolshare/adguardhome/AdGuardHome.yaml.bak
 			/koolshare/adguardhome/adguardhome.sh restart
 		else
 			echo_date "压缩AdGuardHome程序错误,无法回退"

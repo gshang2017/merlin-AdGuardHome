@@ -23,8 +23,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install qemu-user-static
-          lastver=v0.107.29
-          #lastver=$(curl --silent https://api.github.com/repos/AdguardTeam/AdGuardHome/releases/latest | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+          lastver=$(curl --silent https://api.github.com/repos/AdguardTeam/AdGuardHome/releases/latest | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
           curl  --retry 2  -o /tmp/adguardhome_update.tar.gz -L  https://github.com/AdguardTeam/AdGuardHome/releases/download/${lastver}/AdGuardHome_linux_armv5.tar.gz
           mkdir -p /tmp/adguardhome_update
           tar xzf  /tmp/adguardhome_update.tar.gz -C /tmp/adguardhome_update
