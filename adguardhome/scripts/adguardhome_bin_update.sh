@@ -33,7 +33,7 @@ check_update_adguardhome(){
 				rm -rf $adguardhome_update_dir/adguardhome_update.tar.gz
 			fi
 			echo_date "准备升级到最新版本，开始下载"
-			curl  --retry 2  -o $adguardhome_update_dir/adguardhome_update.tar.gz -L  https://github.com/AdguardTeam/AdGuardHome/releases/download/${lastver}/AdGuardHome_linux_armv5.tar.gz
+			curl -k --retry 2  -o $adguardhome_update_dir/adguardhome_update.tar.gz -L  https://github.com/AdguardTeam/AdGuardHome/releases/download/${lastver}/AdGuardHome_linux_armv5.tar.gz
 			#wget --no-check-certificate --timeout=8 --tries=2 -O - "https://github.com/AdguardTeam/AdGuardHome/releases/download/${lastver}/AdGuardHome_linux_armv5.tar.gz" > $adguardhome_update_dir/adguardhome_update.tar.gz
 			if [ -e  "$adguardhome_update_dir/adguardhome_update.tar.gz" ] ; then
 				echo_date "最新版本已下载，准备安装"

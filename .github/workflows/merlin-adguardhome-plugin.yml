@@ -2,9 +2,8 @@ name: merlin-adguardhome-plugin-build
 
 on:
   push:
-    paths:
-    - 'adguardhome/**'
-    - '.github/workflows/merlin-adguardhome-plugin.yml'
+    tags:
+      - '*'
   workflow_dispatch:
 
 jobs:
